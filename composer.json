@@ -1,0 +1,16 @@
+{
+    "name": "w2xi/file-upload",
+    "description": "PHP file upload library",
+    "require": {
+        "php": ">=7.4"
+    },
+    "type": "library",
+	"keywords": [ "upload", "file", "form", "input", "validation", "files" ],
+	"homepage": "https://github.com/w2xi/file-upload",
+	"license": "MIT",
+	"autoload": {
+		"psr-4": {
+			"W2xi\\FileUpload\\": "src/"
+		}
+	}
+}
