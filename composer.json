@@ -2,7 +2,7 @@
     "name": "w2xi/file-upload",
     "description": "PHP file upload library",
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.0"
     },
     "type": "library",
 	"keywords": [ "upload", "file", "form", "input", "validation", "files" ],

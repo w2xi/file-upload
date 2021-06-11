@@ -60,10 +60,10 @@ class FileUpload extends \SplFileObject
      */
     protected array $uploadedFileInfo;
 
-    protected array $validate;
+    protected array $validate = [];
 
-    protected $fileInfo; 
-    
+    protected string $saveName;
+
     /**
      * error message
      * @var string
@@ -76,7 +76,7 @@ class FileUpload extends \SplFileObject
         $this->filename = $this->getRealPath() ?: $this->getPathname();
     }
 
-    public function move($targetDirectory)
+    public function move(string $targetDirectory)
     {
         if ( !$this->isValidUploadedFile() ){
             $this->errorMessage = 'illegal uploaded file';
@@ -104,14 +104,21 @@ class FileUpload extends \SplFileObject
         }
 
         $file = new self($filename);
-        $file->setSaveName($saveName)->setUploadedFileInfo($this->fileInfo);
+        $file->setSaveName($saveName)->setUploadedFileInfo($this->uploadedFileInfo);
 
         return $file;
     }
 
-    public function setUploadedFileInfo($uploadedFileInfo): self
+    public function setUploadedFileInfo(array $uploadedFileInfo): self
     {
         $this->uploadedFileInfo = $uploadedFileInfo;
+
+        return $this;
+    }
+
+    public function setSaveName(string $saveName): self
+    {
+        $this->saveName = $name;
 
         return $this;
     }
@@ -149,9 +156,9 @@ class FileUpload extends \SplFileObject
         return true;
     }
 
-    public function getFileInfo($name = '')
+    public function getUploadedFileInfo($name = '')
     {
-        return isset($this->fileInfo[$name]) ? $this->fileInfo[$name] : $this->fileInfo;
+        return isset($this->uploadedFileInfo[$name]) ? $this->uploadedFileInfo[$name] : $this->uploadedFileInfo;
     }
 
     public function isValidUploadedFile()
@@ -167,9 +174,6 @@ class FileUpload extends \SplFileObject
         $allowedExtensions = $allowedExtension ?? $this->allowedExtensions;
 
         $extension = strtolower(pathinfo($this->getFileInfo('name'), PATHINFO_EXTENSION));
-
-        echo $extension;
-        die;
 
         return in_array($extension, $allowedExtensions, true);
     }
