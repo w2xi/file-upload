@@ -8,13 +8,13 @@ class FileUpload extends \SplFileObject
      * the path to the file
      * @var string
      */
-    protected string $filename;
+    protected $filename = '';
     
     /**
      * allowed extensions
      * @var array
      */
-    protected array $allowedExtensions = [
+    protected $allowedExtensions = [
         '7z',
         'csv',
         'doc',
@@ -58,17 +58,17 @@ class FileUpload extends \SplFileObject
      * uploaded file info
      * @var array
      */
-    protected array $uploadedFileInfo;
+    protected $uploadedFileInfo;
 
-    protected array $validate = [];
+    protected $validate = [];
 
-    protected string $saveName;
+    protected $saveName;
 
     /**
      * error message
      * @var string
      */
-    protected string $errorMessage = '';
+    protected $errorMessage = '';
 
     public function __construct(string $filename, string $open_mode = 'r')
     {
@@ -87,17 +87,20 @@ class FileUpload extends \SplFileObject
             return false;
         }
 
-        $targetDirectory = rtrim($targetDirectory, DS) . DS;
-        $saveName = date('Ymd') . DS . md5(microtime(true));
-        $filename = $targetDirectory . $saveName;
+        $targetDirectory = rtrim($targetDirectory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $extension = pathinfo($this->getUploadedFileInfo('name'), PATHINFO_EXTENSION);
+        
+        $saveName = date('Ymd') . DIRECTORY_SEPARATOR . md5(microtime(true)) . '.' . $extension;
+        $filename = $targetDirectory . $saveName . '.' . $extension;
+        $filename = str_replace('\\', DIRECTORY_SEPARATOR, $filename);
 
-        if ( !is_dir($targetDirectory) ){
+        if ( is_dir(dirname($filename)) || mkdir(dirname($filename), 0777, true) ){
+
+        }else{
             $this->errorMessage = 'invalid uplaoded directory';
             return false;
         }
 
-        mkdir($targetDirectory, 0755, true);
-  
         if ( !move_uploaded_file($this->filename, $filename) ){
             $this->errorMessage = 'uploaded file failed';
             return false;
@@ -118,9 +121,14 @@ class FileUpload extends \SplFileObject
 
     public function setSaveName(string $saveName): self
     {
-        $this->saveName = $name;
+        $this->saveName = $saveName;
 
         return $this;
+    }
+
+    public function getSaveName(): string
+    {
+        return $this->saveName;
     }
 
     public function validate(array $rule = []): self
@@ -173,7 +181,7 @@ class FileUpload extends \SplFileObject
         }
         $allowedExtensions = $allowedExtension ?? $this->allowedExtensions;
 
-        $extension = strtolower(pathinfo($this->getFileInfo('name'), PATHINFO_EXTENSION));
+        $extension = strtolower(pathinfo($this->getUploadedFileInfo('name'), PATHINFO_EXTENSION));
 
         return in_array($extension, $allowedExtensions, true);
     }

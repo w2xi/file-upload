@@ -1,25 +1,3 @@
-<?php 
-
-require '../src/FileUpload.php';
-
-
-if ( isset($_FILES['my-file']) ){
-	// var_dump($_FILES['my-file']);
-
-	$file = new FileUpload($_FILES['my-file']['tmp_name']);
-	$file = $file->setUploadedFileInfo($_FILES['my-file']);
-
-
-	$info = $file->validate(['size' => 10 * 1024 * 1024, 'ext' => 'jpg,png'])->move('../uploads');
-
-	if ( !$info ){
-		var_dump($file->getError());
-	}
-}
-
-
-?>
-
 <html>
 	<head>
 		<meta charset="utf-8"/>
@@ -32,3 +10,24 @@ if ( isset($_FILES['my-file']) ){
 		</form>
 	</body>
 </html>
+
+<?php 
+
+if ( isset($_FILES['my-file']) ){
+	require '../src/FileUpload.php';
+
+	$file = new FileUpload($_FILES['my-file']['tmp_name']);
+	$file = $file->setUploadedFileInfo($_FILES['my-file']);
+
+	$info = $file->validate(['size' => 10 * 1024 * 1024, 'ext' => 'jpg,png'])->move(dirname(__DIR__) . '\\uploads');
+
+	if ( !$info ){
+	    var_dump($file->getError());
+	}
+
+	echo $info->getExtension() . '<br />';
+	echo $info->getSaveName() . '<br />';
+	echo $info->getFilename() . '<br />';
+
+	echo 'upload file successfully!';
+} 
