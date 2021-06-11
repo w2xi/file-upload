@@ -1,6 +1,6 @@
 <?php 
 
-// namespace W2xi\FileUpload;
+namespace W2xi\FileUpload;
 
 class FileUpload extends \SplFileObject
 {
